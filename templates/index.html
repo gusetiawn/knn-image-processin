@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Kematangan Pisang</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <div class="container mx-auto">
+        <div class="flex flex-wrap">
+            <div class="w-full md:w-1/2 p-4">
+                <h1 class="text-gray-700 text-2xl">Unggah Gambar Pisang</h1>
+                <form id="uploadForm" class="mt-8">
+                    <input type="file" name="file" accept=".png,.jpg,.jpeg" onchange="previewImage();" class="block w-full text-sm text-gray-700
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-green-50 file:text-green-700
+                    hover:file:bg-green-100">
+                    <button type="submit" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Prediksi</button>
+                </form>
+                <div id="preview" class="mt-4"></div>
+            </div>
+            <div class="w-full md:w-1/2 p-4">
+                <div id="result" class="mt-4 p-4 bg-gray-200 rounded"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage() {
+            const file = document.querySelector('input[type=file]').files[0];
+            const reader = new FileReader();
+            
+            reader.addEventListener("load", function () {
+                const image = new Image();
+                image.title = file.name;
+                image.src = this.result;
+                image.onload = function() {
+                    // Resize the image if it exceeds the maximum dimensions
+                    const maxWidth = 800; // Maximum width for the image
+                    const maxHeight = 600; // Maximum height for the image
+                    let width = image.width;
+                    let height = image.height;
+
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(image, 0, 0, width, height);
+                    canvas.toBlob(function(blob) {
+                        document.getElementById('preview').innerHTML = '';
+                        const newImg = document.createElement('img');
+                        newImg.src = URL.createObjectURL(blob);
+                        newImg.classList.add('w-full', 'h-auto', 'object-cover');
+                        document.getElementById('preview').appendChild(newImg);
+                    }, 'image/jpeg');
+                };
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('uploadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.ripeness) {
+                    document.getElementById('result').innerHTML = `Kematangan pisang: ${data.ripeness}`;
+                } else {
+                    document.getElementById('result').innerHTML = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+    </script>
+</body>
+</html>
