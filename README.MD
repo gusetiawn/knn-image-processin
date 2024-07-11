@@ -20,7 +20,7 @@ Sistem ini dirancang untuk memprediksi kematangan pisang berdasarkan gambar yang
    ```
 3. Pasang paket Python yang diperlukan:
    ```
-   pip install -r requirements.txt
+   pip install -r requirement.txt
    ```
 4. Mulai aplikasi Flask:
    ```

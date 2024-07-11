@@ -9,14 +9,14 @@ def set_perfect_banana_dataset(data_path, output_path):
         os.makedirs(output_path)
     
     counter = 1
-    for label in ['green', 'ripe', 'overripe']:
+    for label in ['mentah', 'matang', 'terlalu_matang']:
         label_path = os.path.join(data_path, label)
         output_label_path = os.path.join(output_path, label)
         if not os.path.exists(output_label_path):
             os.makedirs(output_label_path)
         
         for file in os.listdir(label_path):
-            if file.endswith('.jpg') or file.endswith('.png'):
+            if file.endswith('.jpg') or file.endswith('.png') or file.endswith('.jpeg'):
                 new_filename = f"banana{counter}.jpg"
                 source_file_path = os.path.join(label_path, file)
                 destination_file_path = os.path.join(output_label_path, new_filename)
@@ -29,6 +29,6 @@ def set_perfect_banana_dataset(data_path, output_path):
     print("Dataset has been restructured with banana(number) dataset naming without deleting any data.")
 
 # Example usage
-data_path = 'dataset'
+data_path = 'data_sample'
 output_path = 'perfect_dataset'
 set_perfect_banana_dataset(data_path, output_path)
